@@ -1,15 +1,10 @@
 ## Bố trí thí nghiệm 
 - Tạo 1 broker miễn phí trên HiveMQ
     + Sau khi tao thành công 1 broker miễn phí trên HiveMQ, tiếp tục tạo 1 username và password rồi Connect 
-    !(https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh1.png)
-    + Thêm topic cần Subcirbe và chọn QoS tương ứng
-    ![Hình 0_1](./images/Hinh0_1.png)
-    + Dữ liệu nhận về sẽ được hiển thị bên dưới
-    + Có thế sử dụng phần mềm MQTTX để kết nối, giám sát, kiểm thử các hoạt động trong hệ thống MQTT 
+  ![Hinh 1](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh1.png)
 - Dùng thư viện PubSubClient trên ESP32 kết nối với một MQTT Broker HiveMQ.
 - Sử dụng thư viện Ticker, một thư viện chuẩn trong Arduino để gọi hàm publish một cách đều đặn và bất đồng bộ, mỗi giây (1s) một lần:
     + Mã: `mqttPulishTicker.attach(1, mqttPublish)`
-    + Tài liệu về Ticker: https://docs.arduino.cc/libraries/ticker/, https://github.com/espressif/arduino-esp32/blob/master/libraries/Ticker/src/Ticker.h 
 - Subscribe tới topic `esp32/echo_test` ngay sau khi MQTT connect thành công
 - Gọi hàm `mqttClient.loop()` trong main loop để handle các thông điệp nhận được từ broker (bất đồng bộ, event driven) bất kỳ lúc nào. 
 - Phát hiện mất kết nối MQTT `if (!mqttClient.connected())` trong main loop để kết nối lại `mqttReconnect()` ngay khi phát hiện mất kết nối.
@@ -30,38 +25,29 @@
 ## Kết quả
 Quan sát thông điệp in ra theo thời gian ta thấy một vài điều thú vị ngoài dự kiến như sau:
 
-![Hình 1](./images/Hinh1_1.png "Hình 1")
-**Hình 1**
+![Hinh 2](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh2.png)
+**Hình 2**
 
 1. Thư viện PubSubClient có thể gọi hàm publish trước khi thiết lập kết nối thành công với broker
-- **Hình 1** cho thấy: có hai thông điệp được "publish" là 0 và 1 trước cả khi MQTT kết nối thành công
+- **Hình 2** cho thấy: có hai thông điệp được "publish" là 0 và 1 trước cả khi MQTT kết nối thành công
 - Sau khi kết nối WiFi thành công, thì `Attempting MQTT connection...` mất khoảng 2s (có thể là 3s) để thiết lập kết nối (mỗi lần publish là 1s).
 
 2. Thông điệp đầu tiên mà ESP32 nhận được từ broker chính là cái `retained message`(This is retained message):
-- Xem **Hình 1**
-- Do logic của mã thông thường là sẽ subscribe vào các topic mà client quan tâm ngay sau khi thiết lập kết nối MQTT thành công, ở đây ta đã subscribe vào `echo_topic` cho nên đã nhận được thông điệp "còn sót lại cuối cùng" (retained message) từ broker. 
+- Xem **Hình 2**
 
 3. Cơ chế Echo hoạt động bình thường như dự kiến, kể cả với QoS 0:
-- Trên **Hình 1**
+- Trên **Hình 2**
 - Điều này không có gì lạ, vì khi mội kết nối được thiết lập thì lớp TCP/IP truyền thông điệp rất tốt 
 - Không quan sát thấy bị mất gói tin lần nào kể cả việc publish và subscribe với QoS = 0. 
 
-![Hình 2](./images/hinh2.png "Hình 2")
-**Hình 2**
+![Hình 3](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh3.png)
+**Hình 3**
 
 4. Khi ngắt điểm phát WiFi (AP):
-- **Hình 2** ngắt tín hiệu từ bộ phát WiFi - ví dụ: trên điện thoại, giữa chừng khi ESP32 đang publish thông điệp 85 (xem hình 2).
-- Ngay lập tức ssl_client ở lớp dưới trên con ESP32 báo lỗi (ssl_client.cpp:37 ...)
-- Sau đó thì thư viện PubSubClient vẫn tiếp tục publishing thông điệp 1s mỗi lần, từ 85 tới 100 (đúng 15s).
-- 15s sau thì MQTT Client mới phát hiện ra việc mất kết nối MQTT và tiến hành `mqttReconnect` --> báo lỗi `failed, rc=-2`
-- Tra cứu trên docs của PubSubClient thì thấy lỗi này có nghĩa là: `-2 : MQTT_CONNECT_FAILED - the network connection failed`
-- .. điều này có nghĩa là tới lúc này thì MQTT Client phát hiện ra mất kết nối mạng (sau 15s) và tiến hành kết nối lại.
-- Việc kết nối lại không thành công cho đến khi ta bật điểm phát WiFi lại.
-- Như trên **Hình 3** việc kết nối MQTT khôi phục mất khoảng 2-3s sau khi kết nối WiFi khôi phục (không in thông điệp kết nối WiFi connected do logic của mã thí nghiệm). 
-- Note: điều này cũng chứng tỏ là thư viện WiFi.h của ESP32 trên Arduino Core nó sẽ tự động xử lý việc kết nối WiFi lại một cách im lặng, không cần người dùng phải viết mã. Nếu muốn bạn có thể tự nghiên cứu kỹ hơn về hiện tượng này bằng mã trong thư mục thí nghiệm "Wifi_Connect_Experiment" cùng trên Repo này. 
+- **Hình 3** ngắt tín hiệu từ bộ phát WiFi - ví dụ: trên điện thoại, giữa chừng khi ESP32 đang publish thông điệp 18 (xem hình 3).
 
-![Hình 3](./images/hinh3.png "Hình 3")
-**Hình 3**
+![Hình 4](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh4.png)
+**Hình 4**
 
 ## Kết luận 
 
