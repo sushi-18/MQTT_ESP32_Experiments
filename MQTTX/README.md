@@ -19,22 +19,19 @@
 
 ## Kết quả
 1. Dùng MQTTX kiểm tra kết nối thành công  
-- Cấu hình hoàn thiện cho 2 cổng 1883 và 8883 trên MQTTX với Broker localhost (ví dụ cấu hình cho cổng 8883 ở **Hình 1**)
-![Hình 1](./images/hinh3.png "Hình 1")
-**Hình 1**
+- Cấu hình hoàn thiện cho 2 cổng 1883 và 8883 trên MQTTX với Broker localhost 
+![Hình 1](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTTX/image/Screenshot%20(399).png)
+![Hình 2](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTTX/image/Screenshot%20(398).png)
     + Nhập đầy đủ các thông tin Name, Host, Port, Client ID, Username, Password
     + Đối với cổng 8883, cần địa chỉ chứng chỉ CA đã tạo
-- **Hình 2** và **Hình 3** cho thấy đã kết nối thành công giữa 2 cổng 1883 và 8883
-![Hình 2](./images/hinh1.png "Hình 2")
-**Hình 2**
-![Hình 3](./images/hinh4.png "Hình 3")
-**Hình 3**
 
 2. Kiểm tra tin nhắn gửi, nhận
 - Gửi một tin nhắn (publish) thử nghiệm tới MQTT broker Mosquitto đang chạy trên localhost qua cổng 1883 
-- Dùng MQTTX kiểm tra tin nhắn được gửi và nhận trong thời gian thực qua cổng 8883 (**Hình 5**)
-![Hình 5](./images/hinh5.png "Hình 5")
-**Hình 5**
+- Dùng MQTTX kiểm tra tin nhắn được gửi và nhận trong thời gian thực qua cổng 8883 (**Hình 3**)
+![Hình 3](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTTX/image/Screenshot%20(388).png)
+**Hình 3**
+![Hình 4](https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTTX/image/Screenshot%20(391).png)
+**Hình 4**
 
 
 ## Kết luận 
