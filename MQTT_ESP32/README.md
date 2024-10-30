@@ -1,7 +1,7 @@
 ## Bố trí thí nghiệm 
 - Tạo 1 broker miễn phí trên HiveMQ
     + Sau khi tao thành công 1 broker miễn phí trên HiveMQ, tiếp tục tạo 1 username và password rồi Connect 
-    ![Hình 0](./images/Hinh0.png)
+    !(https://github.com/sushi-18/MQTT_ESP32_Experiments/blob/main/MQTT_ESP32/image/anh1.png)
     + Thêm topic cần Subcirbe và chọn QoS tương ứng
     ![Hình 0_1](./images/Hinh0_1.png)
     + Dữ liệu nhận về sẽ được hiển thị bên dưới
